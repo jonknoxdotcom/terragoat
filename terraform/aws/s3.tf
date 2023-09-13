@@ -44,7 +44,7 @@ resource "aws_s3_bucket" "financials" {
   # bucket does not have access logs
   # bucket does not have versioning
   bucket        = "${local.resource_prefix.value}-financials"
-  acl           = "private"
+  ### acl           = "private"    *REMOVE*
   force_destroy = true
   tags = merge({
     Name        = "${local.resource_prefix.value}-financials"
@@ -59,8 +59,19 @@ resource "aws_s3_bucket" "financials" {
     git_repo             = "terragoat"
     yor_trace            = "0e012640-b597-4e5d-9378-d4b584aea913"
   })
-
 }
+
+
+# check this is alright without an intermediary
+# ref: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_acl
+resource "aws_s3_bucket_acl" "financials" {
+  depends_on = [aws_s3_bucket.financials]
+
+  bucket = aws_s3_bucket.financials.id
+  acl    = "private"
+}
+
+
 
 resource "aws_s3_bucket" "operations" {
   # bucket is not encrypted
